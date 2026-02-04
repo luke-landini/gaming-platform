@@ -1,4 +1,5 @@
 import axios from 'axios';
+import keycloak from './keycloak';
 
 const API_BASE_URL = 'http://localhost:8081/api/v1';
 
@@ -13,9 +14,8 @@ const api = axios.create({
 // Interceptor to add JWT token to requests
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (keycloak.token) {
+      config.headers.Authorization = `Bearer ${keycloak.token}`;
     }
     return config;
   },
@@ -27,11 +27,14 @@ api.interceptors.request.use(
 // Interceptor to handle responses and errors
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid
-      localStorage.removeItem('access_token');
-      console.error('Authentication failed. Please login again.');
+      // Token expired, try to refresh
+      try {
+        await keycloak.updateToken(30);
+      } catch (refreshError) {
+        keycloak.login();
+      }
     }
     return Promise.reject(error);
   }
