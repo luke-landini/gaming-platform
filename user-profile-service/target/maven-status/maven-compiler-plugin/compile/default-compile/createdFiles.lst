@@ -1,0 +1,9 @@
+com\gaming\user\entity\UserEntity$UserEntityBuilder.class
+com\gaming\user\repository\UserRepository.class
+com\gaming\user\controller\UserController.class
+com\gaming\user\service\UserService.class
+com\gaming\user\dto\UserDTO$UserDTOBuilder.class
+com\gaming\user\UserProfileServiceApplication.class
+com\gaming\user\config\SecurityConfig.class
+com\gaming\user\entity\UserEntity.class
+com\gaming\user\dto\UserDTO.class

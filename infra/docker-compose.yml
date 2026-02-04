@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+  # PostgreSQL per user-profile-service
+  postgres-users:
+    image: postgres:15-alpine
+    container_name: gaming-postgres-users
+    environment:
+      POSTGRES_DB: gaming_users
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: luke2001
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-users-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gaming-network
+
+  # Keycloak per autenticazione JWT
+  keycloak:
+    image: quay.io/keycloak/keycloak:23.0
+    container_name: gaming-keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres-keycloak:5432/keycloak
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: luke2001
+      KC_HOSTNAME_STRICT: false
+      KC_HTTP_ENABLED: true
+    command:
+      - start-dev
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres-keycloak:
+        condition: service_healthy
+    networks:
+      - gaming-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # PostgreSQL per Keycloak
+  postgres-keycloak:
+    image: postgres:15-alpine
+    container_name: gaming-postgres-keycloak
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: luke2001
+    volumes:
+      - postgres-keycloak-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gaming-network
+
+  # pgAdmin (opzionale - per gestire i database)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: gaming-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@gaming.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - postgres-users
+    networks:
+      - gaming-network
+
+volumes:
+  postgres-users-data:
+    driver: local
+  postgres-keycloak-data:
+    driver: local
+  pgadmin-data:
+    driver: local
+
+networks:
+  gaming-network:
+    driver: bridge
