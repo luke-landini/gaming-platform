@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
 import UserProfile from './components/UserProfile'
+import GameCatalog from './components/GameCatalog'
+import Home from './components/Home'
 import keycloak from './services/keycloak'
 import './App.css'
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState('home')
 
   useEffect(() => {
     // Initialize Keycloak
@@ -42,9 +45,40 @@ function App() {
   }
 
   return (
-    <>
+    <div className="app-container">
       {isAuthenticated ? (
-        <UserProfile onLogout={handleLogout} />
+        <>
+          <nav className="main-nav">
+            <div className="nav-logo">🎮 Gaming Platform</div>
+            <div className="nav-links">
+              <button 
+                className={`nav-btn ${activeTab === 'home' ? 'active' : ''}`}
+                onClick={() => setActiveTab('home')}
+              >
+                Home
+              </button>
+              <button 
+                className={`nav-btn ${activeTab === 'catalog' ? 'active' : ''}`}
+                onClick={() => setActiveTab('catalog')}
+              >
+                Game Catalog
+              </button>
+              <button 
+                className={`nav-btn ${activeTab === 'profile' ? 'active' : ''}`}
+                onClick={() => setActiveTab('profile')}
+              >
+                Profile
+              </button>
+              <button onClick={handleLogout} className="btn-logout-small">Logout</button>
+            </div>
+          </nav>
+
+          <main className="content">
+            {activeTab === 'home' && <Home onNavigate={setActiveTab} />}
+            {activeTab === 'profile' && <UserProfile onLogout={handleLogout} />}
+            {activeTab === 'catalog' && <GameCatalog />}
+          </main>
+        </>
       ) : (
         <div className="login-welcome">
           <div className="welcome-content">
@@ -59,7 +93,7 @@ function App() {
           </div>
         </div>
       )}
-    </>
+    </div>
   )
 }
 
