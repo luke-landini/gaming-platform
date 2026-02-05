@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final jakarta.persistence.EntityManager entityManager;
 
     /**
      * Get an existing user by email or create a new one if not found.
@@ -55,7 +56,8 @@ public class UserService {
                 .avatarUrl(null) // Initially null, can be updated later
                 .build();
 
-        UserEntity savedUser = userRepository.save(newUser);
+        UserEntity savedUser = userRepository.saveAndFlush(newUser);
+        entityManager.refresh(savedUser);
         log.info("Created new user with ID: {} for email: {}", savedUser.getId(), email);
 
         return savedUser;

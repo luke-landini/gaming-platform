@@ -9,7 +9,7 @@ spring:
     name: user-profile-service
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/gaming-users
+    url: jdbc:postgresql://localhost:5432/gaming_users
     username: postgres
     password: luke2001
     driver-class-name: org.postgresql.Driver

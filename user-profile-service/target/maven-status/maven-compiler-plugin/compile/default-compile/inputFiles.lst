@@ -1,7 +1,7 @@
-/home/llandini/gaming-platform/gaming-platform/user-profile-service/src/main/java/com/gaming/user/repository/UserRepository.java
-/home/llandini/gaming-platform/gaming-platform/user-profile-service/src/main/java/com/gaming/user/UserProfileServiceApplication.java
-/home/llandini/gaming-platform/gaming-platform/user-profile-service/src/main/java/com/gaming/user/controller/UserController.java
-/home/llandini/gaming-platform/gaming-platform/user-profile-service/src/main/java/com/gaming/user/entity/UserEntity.java
-/home/llandini/gaming-platform/gaming-platform/user-profile-service/src/main/java/com/gaming/user/service/UserService.java
-/home/llandini/gaming-platform/gaming-platform/user-profile-service/src/main/java/com/gaming/user/config/SecurityConfig.java
-/home/llandini/gaming-platform/gaming-platform/user-profile-service/src/main/java/com/gaming/user/dto/UserDTO.java
+/Users/luke/java_projects/gaming-platform/user-profile-service/src/main/java/com/gaming/user/repository/UserRepository.java
+/Users/luke/java_projects/gaming-platform/user-profile-service/src/main/java/com/gaming/user/service/UserService.java
+/Users/luke/java_projects/gaming-platform/user-profile-service/src/main/java/com/gaming/user/UserProfileServiceApplication.java
+/Users/luke/java_projects/gaming-platform/user-profile-service/src/main/java/com/gaming/user/config/SecurityConfig.java
+/Users/luke/java_projects/gaming-platform/user-profile-service/src/main/java/com/gaming/user/controller/UserController.java
+/Users/luke/java_projects/gaming-platform/user-profile-service/src/main/java/com/gaming/user/dto/UserDTO.java
+/Users/luke/java_projects/gaming-platform/user-profile-service/src/main/java/com/gaming/user/entity/UserEntity.java

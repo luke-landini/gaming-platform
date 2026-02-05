@@ -3,6 +3,7 @@ package com.gaming.user.service;
 import com.gaming.user.dto.UserDTO;
 import com.gaming.user.entity.UserEntity;
 import com.gaming.user.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,6 +29,9 @@ class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private EntityManager entityManager;
 
     @InjectMocks
     private UserService userService;
@@ -56,7 +60,7 @@ class UserServiceTest {
         assertThat(result.getId()).isEqualTo(existingUser.getId());
 
         verify(userRepository, times(1)).findByEmail(email);
-        verify(userRepository, never()).save(any(UserEntity.class));
+        verify(userRepository, never()).saveAndFlush(any(UserEntity.class));
     }
 
     @Test
@@ -74,7 +78,8 @@ class UserServiceTest {
                 .build();
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
-        when(userRepository.save(any(UserEntity.class))).thenReturn(newUser);
+        when(userRepository.saveAndFlush(any(UserEntity.class))).thenReturn(newUser);
+        doNothing().when(entityManager).refresh(any());
 
         // When: Calling getOrCreate
         UserDTO result = userService.getOrCreate(email, username);
@@ -85,7 +90,8 @@ class UserServiceTest {
         assertThat(result.getId()).isEqualTo(newUserId);
 
         verify(userRepository, times(1)).findByEmail(email);
-        verify(userRepository, times(1)).save(any(UserEntity.class));
+        verify(userRepository, times(1)).saveAndFlush(any(UserEntity.class));
+        verify(entityManager, times(1)).refresh(any());
     }
 
     @Test
