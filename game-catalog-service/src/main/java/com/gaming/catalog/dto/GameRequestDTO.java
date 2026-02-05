@@ -24,6 +24,8 @@ public class GameRequestDTO {
     private String publisher;
 
     private Double rating;
+    
+    private String imageUrl;
 
     private Set<Long> genreIds;
 

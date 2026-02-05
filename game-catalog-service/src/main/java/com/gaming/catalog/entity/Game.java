@@ -49,6 +49,8 @@ public class Game {
     private String publisher;
 
     private Double rating;
+    
+    private String imageUrl;
 
     @CreationTimestamp
     @Column(updatable = false)

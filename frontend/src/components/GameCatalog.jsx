@@ -93,7 +93,13 @@ function GameCatalog({ onPlayGame }) {
       <div className="game-grid">
         {games.map(game => (
           <div key={game.id} className="game-card">
-            <div className="game-image-placeholder">🕹️</div>
+            <div className="game-image-container">
+              {game.imageUrl ? (
+                <img src={game.imageUrl} alt={game.title} className="game-image" />
+              ) : (
+                <div className="game-image-placeholder">🕹️</div>
+              )}
+            </div>
             <div className="game-card-content">
               <h3>{game.title}</h3>
               <p className="game-price">€{game.price.toFixed(2)}</p>
@@ -109,7 +115,12 @@ function GameCatalog({ onPlayGame }) {
               <div className="game-actions">
                 <button 
                   className="btn-play" 
-                  onClick={() => onPlayGame(game.title.toLowerCase().includes('snake') ? 'snake-game' : game.id)}
+                  onClick={() => {
+                    const title = game.title.toLowerCase();
+                    if (title.includes('snake')) onPlayGame('snake-game');
+                    else if (title.includes('space invaders')) onPlayGame('space-invaders');
+                    else onPlayGame(game.id);
+                  }}
                 >
                   ▶ Play
                 </button>

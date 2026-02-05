@@ -78,6 +78,11 @@ function Home({ onNavigate }) {
               featuredGames.map(game => (
                 <div key={game.id} className="featured-game-card">
                   <div className="game-card-img">
+                    {game.imageUrl ? (
+                      <img src={game.imageUrl} alt={game.title} className="home-game-img" />
+                    ) : (
+                      <div className="home-game-placeholder">🕹️</div>
+                    )}
                     <span className="game-rating">★ {game.rating}</span>
                   </div>
                   <div className="game-card-info">
@@ -100,14 +105,6 @@ function Home({ onNavigate }) {
         </div>
       </section>
 
-      <footer className="home-footer">
-        <p>&copy; 2026 Gaming Platform. All rights reserved.</p>
-        <div className="footer-links">
-          <span>Terms of Service</span>
-          <span>Privacy Policy</span>
-          <span>Contact Us</span>
-        </div>
-      </footer>
     </div>
   );
 }

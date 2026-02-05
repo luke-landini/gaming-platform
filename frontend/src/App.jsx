@@ -3,6 +3,8 @@ import UserProfile from './components/UserProfile'
 import GameCatalog from './components/GameCatalog'
 import Home from './components/Home'
 import SnakeGame from './components/SnakeGame'
+import SpaceInvaders from './components/SpaceInvaders'
+import Footer from './components/Footer'
 import keycloak from './services/keycloak'
 import './App.css'
 
@@ -73,8 +75,17 @@ function App() {
           <main className="content">
             {activeTab === 'home' && <Home onNavigate={setActiveTab} />}
             {activeTab === 'profile' && <UserProfile onLogout={handleLogout} />}
-            {activeTab === 'catalog' && <GameCatalog onPlayGame={(gameId) => setActiveTab(gameId === 'snake-game' ? 'play' : 'catalog')} />}
-            {activeTab === 'play' && <SnakeGame onBack={() => setActiveTab('catalog')} />}
+            {activeTab === 'catalog' && (
+              <GameCatalog 
+                onPlayGame={(gameId) => {
+                  if (gameId === 'snake-game') setActiveTab('play-snake');
+                  else if (gameId === 'space-invaders') setActiveTab('play-space');
+                  else setActiveTab('catalog');
+                }} 
+              />
+            )}
+            {activeTab === 'play-snake' && <SnakeGame onBack={() => setActiveTab('catalog')} />}
+            {activeTab === 'play-space' && <SpaceInvaders onBack={() => setActiveTab('catalog')} />}
           </main>
         </>
       ) : (
@@ -91,6 +102,7 @@ function App() {
           </div>
         </div>
       )}
+      {!isLoading && <Footer />}
     </div>
   )
 }

@@ -15,6 +15,7 @@ public class GameDTO {
     private LocalDate releaseDate;
     private String publisher;
     private Double rating;
+    private String imageUrl;
     private LocalDateTime createdAt;
     private Set<GenreDTO> genres;
     private Set<PlatformDTO> platforms;
