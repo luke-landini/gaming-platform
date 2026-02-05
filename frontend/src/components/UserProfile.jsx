@@ -1,15 +1,26 @@
 import { useState, useEffect } from 'react';
-import { userApi } from '../services/api';
+import { userApi, leaderboardApi } from '../services/api';
 import './UserProfile.css';
 
 function UserProfile({ onLogout }) {
   const [user, setUser] = useState(null);
+  const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [stats, setStats] = useState({
+    gamesPlayed: 0,
+    level: 1,
+    achievements: 0
+  });
 
   useEffect(() => {
     fetchUserProfile();
+    fetchUserHistory();
   }, []);
+
+  useEffect(() => {
+    calculateStats(history);
+  }, [history]);
 
   const fetchUserProfile = async () => {
     try {
@@ -28,6 +39,49 @@ function UserProfile({ onLogout }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchUserHistory = async () => {
+    try {
+      const data = await leaderboardApi.getAllUserHistory();
+      setHistory(data);
+    } catch (err) {
+      console.error('Error fetching user history:', err);
+    }
+  };
+
+  const calculateStats = (historyData) => {
+    if (!historyData || historyData.length === 0) {
+      setStats({
+        gamesPlayed: 0,
+        level: 1,
+        achievements: 0
+      });
+      return;
+    }
+    // 1. Games Played
+    const gamesPlayed = historyData.length;
+
+    // 2. Level calculation (e.g., 100 points per level)
+    const totalScore = historyData.reduce((acc, curr) => acc + curr.score, 0);
+    const level = Math.floor(totalScore / 100) + 1;
+
+    // 3. Achievements logic
+    let achievements = 0;
+    if (gamesPlayed >= 1) achievements++; // First Game
+    if (gamesPlayed >= 10) achievements++; // Veteran (10 games)
+    if (historyData.some(h => h.score >= 50)) achievements++; // Sharpshooter (Score >= 50)
+    if (historyData.some(h => h.score >= 100)) achievements++; // Master (Score >= 100)
+    
+    // Unicitá dei giochi provati
+    const uniqueGames = new Set(historyData.map(h => h.gameId)).size;
+    if (uniqueGames >= 3) achievements++; // Explorer (3 unique games)
+
+    setStats({
+      gamesPlayed,
+      level,
+      achievements
+    });
   };
 
   const handleLogout = () => {
@@ -84,13 +138,6 @@ function UserProfile({ onLogout }) {
 
   return (
     <div className="profile-container">
-      <div className="profile-header">
-        <h1>🎮 Gaming Platform</h1>
-        <button onClick={handleLogout} className="btn-logout">
-          Logout
-        </button>
-      </div>
-
       <div className="profile-card">
         <div className="profile-banner">
           <div className="banner-gradient"></div>
@@ -133,33 +180,48 @@ function UserProfile({ onLogout }) {
           </div>
 
           <div className="profile-actions">
-            <button onClick={fetchUserProfile} className="btn btn-primary">
+            <button onClick={() => { fetchUserProfile(); fetchUserHistory(); }} className="btn btn-primary">
               🔄 Refresh Profile
             </button>
           </div>
         </div>
       </div>
 
+      {history.length > 0 && (
+        <div className="history-section">
+          <h2>📊 Recent Game Activity</h2>
+          <div className="history-list">
+            {history.map((record) => (
+              <div key={record.id} className="history-item">
+                <span className="history-game">{record.gameId}</span>
+                <span className="history-score">{record.score} pts</span>
+                <span className="history-date">{formatDate(record.createdAt)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="stats-container">
         <div className="stat-card">
           <div className="stat-icon">🏆</div>
           <h3>Achievements</h3>
-          <p className="stat-value">0</p>
-          <p className="stat-label">Coming soon</p>
+          <p className="stat-value">{stats.achievements}</p>
+          <p className="stat-label">Unlocked</p>
         </div>
 
         <div className="stat-card">
           <div className="stat-icon">🎯</div>
           <h3>Games Played</h3>
-          <p className="stat-value">0</p>
-          <p className="stat-label">Coming soon</p>
+          <p className="stat-value">{stats.gamesPlayed}</p>
+          <p className="stat-label">Total Sessions</p>
         </div>
 
         <div className="stat-card">
           <div className="stat-icon">⭐</div>
           <h3>Level</h3>
-          <p className="stat-value">1</p>
-          <p className="stat-label">Coming soon</p>
+          <p className="stat-value">{stats.level}</p>
+          <p className="stat-label">Gaming Rank</p>
         </div>
       </div>
     </div>

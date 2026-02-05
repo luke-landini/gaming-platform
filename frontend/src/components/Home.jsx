@@ -31,10 +31,7 @@ function Home({ onNavigate }) {
           </p>
           <div className="hero-actions">
             <button className="btn-primary" onClick={() => onNavigate('catalog')}>
-              Explore Catalog
-            </button>
-            <button className="btn-secondary" onClick={() => onNavigate('profile')}>
-              View Profile
+              Explore Catalog 🎮
             </button>
           </div>
         </div>

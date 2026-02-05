@@ -22,6 +22,35 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+    private final com.gaming.user.repository.UserRepository userRepository;
+
+    /**
+     * Get user profile by ID.
+     *
+     * @param id the user UUID
+     * @return ResponseEntity with UserDTO
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDTO> getUserById(@org.springframework.web.bind.annotation.PathVariable java.util.UUID id) {
+        log.info("GET /api/v1/users/{} - Request profile", id);
+        return userRepository.findById(id)
+                .map(user -> ResponseEntity.ok(UserDTO.fromEntity(user)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Get user profile by email.
+     *
+     * @param email the user email
+     * @return ResponseEntity with UserDTO
+     */
+    @GetMapping("/email")
+    public ResponseEntity<UserDTO> getUserByEmail(@org.springframework.web.bind.annotation.RequestParam String email) {
+        log.info("GET /api/v1/users/email?email={} - Request profile", email);
+        return userRepository.findByEmail(email)
+                .map(user -> ResponseEntity.ok(UserDTO.fromEntity(user)))
+                .orElse(ResponseEntity.notFound().build());
+    }
 
     /**
      * Get the current authenticated user's profile.

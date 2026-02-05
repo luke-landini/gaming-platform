@@ -3,6 +3,7 @@ import keycloak from './keycloak';
 
 const USER_SERVICE_URL = 'http://localhost:8081/api/v1';
 const CATALOG_SERVICE_URL = 'http://localhost:8082/api';
+const LEADERBOARD_SERVICE_URL = 'http://localhost:8083/api';
 
 // Create axios instance for User Service
 const userApiInstance = axios.create({
@@ -15,6 +16,14 @@ const userApiInstance = axios.create({
 // Create axios instance for Catalog Service
 const catalogApiInstance = axios.create({
   baseURL: CATALOG_SERVICE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Create axios instance for Leaderboard Service
+const leaderboardApiInstance = axios.create({
+  baseURL: LEADERBOARD_SERVICE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -53,6 +62,7 @@ const setupInterceptors = (instance) => {
 
 setupInterceptors(userApiInstance);
 setupInterceptors(catalogApiInstance);
+setupInterceptors(leaderboardApiInstance);
 
 // User API endpoints
 export const userApi = {
@@ -90,4 +100,24 @@ export const catalogApi = {
   },
 };
 
-export default { userApi, catalogApi };
+// Leaderboard API endpoints
+export const leaderboardApi = {
+  submitScore: async (scoreData) => {
+    const response = await leaderboardApiInstance.post('/leaderboard/scores', scoreData);
+    return response.data;
+  },
+  getTopScores: async (gameId, limit = 10) => {
+    const response = await leaderboardApiInstance.get(`/leaderboard/top/${gameId}`, { params: { limit } });
+    return response.data;
+  },
+  getUserHistory: async (gameId) => {
+    const response = await leaderboardApiInstance.get(`/leaderboard/history/${gameId}`);
+    return response.data;
+  },
+  getAllUserHistory: async () => {
+    const response = await leaderboardApiInstance.get('/leaderboard/history');
+    return response.data;
+  },
+};
+
+export default { userApi, catalogApi, leaderboardApi };

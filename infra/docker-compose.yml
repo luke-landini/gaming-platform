@@ -88,6 +88,70 @@ services:
     networks:
       - gaming-network
 
+  # Redis per leaderboard-service
+  redis:
+    image: redis:7-alpine
+    container_name: gaming-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - gaming-network
+
+  # Kafka (e Zookeeper integrato o separato)
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: gaming-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - gaming-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: gaming-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - gaming-network
+
+  # Leaderboard Service
+  leaderboard-service:
+    build:
+      context: ../leaderboard-service
+    container_name: leaderboard-service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-users:5432/gaming_users
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: luke2001
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      SERVICES_USER-PROFILE_URL: http://user-profile-service:8081
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/myrealm
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/myrealm/protocol/openid-connect/certs
+    depends_on:
+      postgres-users:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      kafka:
+        condition: service_started
+      keycloak:
+        condition: service_healthy
+    networks:
+      - gaming-network
+
 volumes:
   postgres-users-data:
     driver: local

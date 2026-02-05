@@ -3,7 +3,7 @@ import { catalogApi } from '../services/api';
 import keycloak from '../services/keycloak';
 import './GameCatalog.css';
 
-function GameCatalog() {
+function GameCatalog({ onPlayGame }) {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -105,6 +105,14 @@ function GameCatalog() {
                 {game.platforms?.map(p => (
                   <span key={p.id} className="badge platform-badge">{p.name}</span>
                 ))}
+              </div>
+              <div className="game-actions">
+                <button 
+                  className="btn-play" 
+                  onClick={() => onPlayGame(game.title.toLowerCase().includes('snake') ? 'snake-game' : game.id)}
+                >
+                  ▶ Play
+                </button>
               </div>
             </div>
           </div>

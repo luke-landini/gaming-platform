@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import UserProfile from './components/UserProfile'
 import GameCatalog from './components/GameCatalog'
 import Home from './components/Home'
+import SnakeGame from './components/SnakeGame'
 import keycloak from './services/keycloak'
 import './App.css'
 
@@ -49,14 +50,10 @@ function App() {
       {isAuthenticated ? (
         <>
           <nav className="main-nav">
-            <div className="nav-logo">🎮 Gaming Platform</div>
+            <div className="nav-logo" onClick={() => setActiveTab('home')}>
+              🎮 Gaming Platform
+            </div>
             <div className="nav-links">
-              <button 
-                className={`nav-btn ${activeTab === 'home' ? 'active' : ''}`}
-                onClick={() => setActiveTab('home')}
-              >
-                Home
-              </button>
               <button 
                 className={`nav-btn ${activeTab === 'catalog' ? 'active' : ''}`}
                 onClick={() => setActiveTab('catalog')}
@@ -76,7 +73,8 @@ function App() {
           <main className="content">
             {activeTab === 'home' && <Home onNavigate={setActiveTab} />}
             {activeTab === 'profile' && <UserProfile onLogout={handleLogout} />}
-            {activeTab === 'catalog' && <GameCatalog />}
+            {activeTab === 'catalog' && <GameCatalog onPlayGame={(gameId) => setActiveTab(gameId === 'snake-game' ? 'play' : 'catalog')} />}
+            {activeTab === 'play' && <SnakeGame onBack={() => setActiveTab('catalog')} />}
           </main>
         </>
       ) : (

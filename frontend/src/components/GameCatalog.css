@@ -97,6 +97,29 @@
   background: #018786;
 }
 
+.game-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-play {
+  background: linear-gradient(135deg, var(--orange-primary), var(--orange-hover));
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(255, 107, 53, 0.2);
+}
+
+.btn-play:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 15px rgba(255, 107, 53, 0.4);
+}
+
 .pagination {
   display: flex;
   justify-content: center;
